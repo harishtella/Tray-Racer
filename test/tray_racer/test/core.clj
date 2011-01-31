@@ -2,5 +2,6 @@
   (:use [tray-racer.core] :reload)
   (:use [clojure.test]))
 
-(deftest replace-me ;; FIXME: write
-  (is false "No tests have been written."))
+(deftest add
+         (testing "some stupid bullshit")
+         (is (= 3 (+ 2 1))))
