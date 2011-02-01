@@ -5,3 +5,5 @@
 (deftest add
          (testing "some stupid bullshit")
          (is (= 3 (+ 2 1))))
+
+
