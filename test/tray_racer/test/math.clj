@@ -1,11 +1,12 @@
 (ns tray-racer.test.math
   (:use [tray-racer.math] :reload)
-  (:use [clojure.test])
-  (:import [tray-racer.math vec3]))
+  (:use [clojure.test]))
+
+;XXX fix these test with a regex
 
 (deftest stupid-test 
          (testing "some stupid bullshit")
-         (let [x (vec3. 2 3 5)]
+         (let [[2 3 5] x]
            (println x)
            (println (normalize x))
            (println (length x))
@@ -15,11 +16,9 @@
            (println (minus x (vec3. 1 1 1)))
            (println (mul x (vec3. 3 3 3 )))
            (println (mul x 7))
-           (println (mul x 3.5))
+           (println (mul x 3.5)))
 
-           ; should cause exception
-           ;(println (mul x "hi"))
-           )
 
-         (is (= 3 (+ 2 1))))
+           ;dummy test
+           (is (= 3 (+ 2 1))))
 
