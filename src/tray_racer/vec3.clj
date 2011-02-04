@@ -1,5 +1,6 @@
-(ns tray-racer.math
+(ns tray-racer.vec3
   (:require [clojure.contrib.math :as m])
+  (:refer-clojure :rename {+ cc+ - cc- * cc*})
   (:use alex-and-georges.debug-repl))
 
 (defn vec3? [v & vs]
@@ -11,45 +12,50 @@
       v-t)))
 ; XXX better way to filter for truthiness?
 
-(defn length [v] 
+(defn len [v] 
   {:pre [(vec3? v)]
    :post [(number? %)]}
-  (let [len-squared (reduce + (map * v v))]
+  (let [len-squared (reduce cc+ (map cc* v v))]
     (m/sqrt len-squared)))
 
-(defn normalize [v] 
+(defn norm [v] 
   {:pre [(vec3? v)]
    :post [(vec3? %)]}
-  (let [l (/ 1.0 (length v))]
-    (vec (map (partial * l) v)))) 
+  (let [l (/ 1.0 (len v))]
+    (vec (map (partial cc* l) v)))) 
 
 (defn dot [v1 v2]
   {:pre [(vec3? v1 v2)]
    :post [(number? %)]}
-  (reduce + (map * v1 v2)))
+  (reduce cc+ (map cc* v1 v2)))
 
 (defn cross [[x1 y1 z1 :as v1] [x2 y2 z2 :as v2]]
   {:pre [(vec3? v1 v2)]
    :post [(vec3? %)]}
-  [(* y1 (- z2 z1) y2) (* z1 (- x2 x1) z2) (* x1 (- y2 y1) x2)])
+  [(cc* y1 (cc- z2 z1) y2) (cc* z1 (cc- x2 x1) z2) (cc* x1 (cc- y2 y1) x2)])
 
-(defn add [v1 v2]
+(defn + [v1 v2]
   {:pre [(vec3? v1 v2)]
    :post [(vec3? %)]}
-  (vec (map + v1 v2)))
+  (vec (map cc+ v1 v2)))
 
-(defn minus [v1 v2]
+(defn - [v1 v2]
   {:pre [(vec3? v1 v2)]
    :post [(vec3? %)]}
-  (vec (map - v1 v2)))
+  (vec (map cc- v1 v2)))
 
-; XXX can I do this with overloading?
-(defn mul [v1 x]
-  {:pre [(vec3? v1) (or (vec3? x) (number? x))]
+(defn * [a b]
+  {:pre [(or (vec3? a) (number? a)) 
+         (or (vec3? b) (number? b))
+         (not (and (number? a) (number? b)))]
    :post [(vec3? %)]}
-  (if (vec3? x)
-    (vec (map * v1 x))
-    (vec (map (partial * x) v1))))
+  (cond 
+    (vec3? a b)
+    (vec (map cc* a b))
+    (number? a)
+    (vec (map (partial cc* a) b))
+    (number? b)
+    (vec (map (partial cc* b) a))))
 
 
 
