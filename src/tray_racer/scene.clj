@@ -11,29 +11,33 @@
              (intersect [ray dist])
              (get-normal [pos]))
 
-(defrecord Sphere [center radius name is-light material]
+(defrecord Sphere [center rad name is-light material]
            primitive
            (intersect [ray dist]
-                      (let [r2 (* radius radius)
-                            o (v/- (:orig ray) center)
-                            b (* -1
-                                 (v/dot o (:dir ray)))
-                            det (+ (* b b)
-                                   (* -1 (v/dot o o))
-                                   r2)]
-                        (if (<= det 0)
+                      (let [o-c (v/- (:orig ray) center)
+                            d (:dir ray)
+                            A (v/dot d d)
+                            B (* 2 (v/dot o-c d))
+                            ;; XXX is v/dot commutative with vec/* ?
+                            C (- (v/dot o-c o-c)
+                                 (* rad rad))
+                            ;; XXX does this work
+                            det (- (** B 2)
+                                   (* 4 A C))]
+                        (if (< det 0) 
                           'miss
-                          (let [det (m/sqrt det)
-                                i1 (- b det)
-                                i2 (+ b det)]
-                            (if (and (> i2 0)
-                                     (< i1 0)
+                          (let [sqrt-det (m/sqrt det)
+                                q (/ ((if (< B 0) '+ '-) 
+                                        ;; XXX can I do this
+                                        (- B) 
+                                        ;; XXX can I do this
+                                        sqrt-det) 
+                                     2)
 
 
 
 
-                            
-
+                        
                                    
 
 
