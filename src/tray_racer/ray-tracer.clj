@@ -3,21 +3,17 @@
   (:require [clojure.pprint :as p])
   (:require [tray-racer.vec3 :as v])
   (:require [tray-racer.scene :as s])
-  (:use clojure.stacktrace))
+  (:use clojure.stacktrace)
+  (:use alex-and-georges.debug-repl))
 
 (def p p/pprint)
 
 (s/init-scene)
-(p/pprint s/Scene)
-
-(p/pprint (get-prim-hit (Ray. [-5.5 -0.5 0] [0 0 1])))
-(print-cause-trace *e 5)
 
 (def rrr (Ray. [-5.5 -0.5 0] [0 0 1]))
 (def bbb (get-prim-hit rrr))   
-
-;; XXX error with core.r
-(calc-color (ray-point rrr (second bbb)) (first bbb))
+(def rp (ray-point rrr (second bbb)))
+(calc-color rp (first bbb))
 
 ;; dir must not be [0 0 0]  
 (defrecord Ray [orig dir])
@@ -36,14 +32,13 @@
 (defn calc-color [hit-point prim]
   (let [n (s/get-normal prim hit-point)]
     (loop [color [0 0 0] lights (s/get-lights)]
-      (let [light (first lights)
-            l (v/- (:center light) (:center prim))
-            l (v/norm l)
-            dot (v/dot n l)
-            diff (* dot (s/m :diffuse prim))
-            c (reduce v/* 
-                      diff 
-                      (s/m :color light) 
-                      (s/m :color prim))]
-        (recur (v/+ color c) (next lights))))))
+      (if-let [light (first lights)]
+        (let [l (v/- (:center light) (:center prim))
+              l (v/norm l)
+              dot (v/dot n l)
+              diff (* dot (s/m :diffuse prim))
+              c (reduce v/* 
+                        (list diff (s/m :color light) (s/m :color prim)))]
+          (recur (v/+ color c) (next lights)))
+        color))))
 
