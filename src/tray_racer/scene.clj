@@ -1,9 +1,9 @@
 (ns tray-racer.scene
   (:require [clojure.contrib.math :as m])
   (:require [tray-racer.vec3 :as v])
-  (:require [clojure.pprint :as p]))
+  (:require [clojure.pprint :as p])
+  (:use alex-and-georges.debug-repl))
 
-(defrecord Ray [orig dir])
 
 ;; vec3 float float
 (defrecord Material [color reflection diffuse])
@@ -57,8 +57,26 @@
                        (v/* (v/- pos center)
                                 (/ 1 (* rad rad)))))
 
-;; vec3 float
-(defrecord Plane [normal p name is-light material]
+;; vec3 float 
+(defrecord Plane [normal d name is-light material]
+           primitive
+           ;; XXX not sure how this works
+           (intersect [this ray]
+                      (let [den (v/dot normal (:dir ray))]
+                        (if (not= 0 den)
+                          (let [dist (/
+                                       (- (+ d 
+                                             (v/dot normal (:orig ray))))
+                                       den)]
+                            (if (<= dist 0)  
+                              [this 'miss]
+                              [this dist]))
+                          [this 'miss])))
+           (get-normal [this pos]
+                       normal))
+
+;; vec3 vec3 
+(defrecord Plane-with-point [normal p name is-light material]
            primitive
            (intersect [this ray]
                       (let [den (v/dot normal (:dir ray))
