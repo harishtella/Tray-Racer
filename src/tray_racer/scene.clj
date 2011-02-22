@@ -31,6 +31,8 @@
                                  (* rad rad))
                             det (- (m/expt B 2)
                                    (* 4 A C))]
+                        (if (zero? A)
+                          (p/pprint d))
                         (if (< det 0) 
                           [this 'miss]
                           (let [sqrt-det (m/sqrt det)
@@ -103,7 +105,7 @@
         (list (Plane. [0 1 0] 4.4 "plane" false 
                       (Material. [0.4 0.3 0.3] 0 1.0))
               (Sphere. [1 -0.8 3] 2.5 "big sphere" false 
-                       (Material. [0.7 0.7 0.7] 0.6 0))
+                       (Material. [0.7 0.7 0.7] 0.6 0.2))
               (Sphere. [-5.5 -0.5 7] 2 "small sphere" false
                        (Material. [0.7 0.7 1.0] 1.0 0.1))
               (Sphere. [0 5 5] 0.1 "" true 
