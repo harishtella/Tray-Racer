@@ -16,7 +16,7 @@
 (s/init-scene)
 
 (def o [0 0 -5])
-(def real-d [400 300])
+(def real-d [200 150])
 (def proj-d [[-4 4] [3 -3]])
 
 ;; dir must not be [0 0 0]  
