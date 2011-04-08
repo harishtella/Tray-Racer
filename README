@@ -12,8 +12,10 @@ download and install leiningen then perform.
 lein deps
 lein run
 
+sit back and enjoy watching the rays being traced 
+
 ## License
 
-Copyright (C) 2010 Harish Tella
+Copyright (C) 2011 Harish Tella
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the MIT License
