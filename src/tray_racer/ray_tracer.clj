@@ -59,10 +59,10 @@
           (let [l (v/- (:center light) hit-point)
                 l (v/norm l)
                 dot (v/dot n l)
-                diff (* dot (s/m :diffuse prim))]
+                diff (* dot (s/mat-prop :diffuse prim))]
             (if (> diff 0)
               (let [c (reduce v/* 
-                              [diff (s/m :color light) (s/m :color prim)])]
+                              [diff (s/mat-prop :color light) (s/mat-prop :color prim)])]
                 (recur (v/+ color c) (next lights)))
               (recur color (next lights))))
           color)))))

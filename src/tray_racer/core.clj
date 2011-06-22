@@ -11,15 +11,12 @@
   (smooth)
   (background-float 225)
   (stroke-float 10)
-  (framerate 9999))
+  ;; call the draw function as often as possible 
+  (framerate 9999)) 
 
 (defapplet tr :title "tray-racer: best graphics"
   :setup setup :draw draw :size rt/real-d)
   
-
 (defn -main [& args] 
   (run tr))
 
-;;(run tr)
-
-;;(stop tr)          

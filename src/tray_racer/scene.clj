@@ -5,15 +5,26 @@
   (:use alex-and-georges.debug-repl))
 
 
+;; MATERIALS
+;; ---------------------------------------------
+;;
+;;
+;;
+
 ;; vec3 float float
 (defrecord Material [color reflection diffuse])
 
 (defn specular-of [mat]
   (- 1.0 (:diffuse mat)))
 
-;; gets the material object from a primitive
-(defn m [key prim]
-  (key (:material prim)))
+
+
+
+;; PRIMITIVES 
+;; ---------------------------------------------
+;;
+;;
+;;
 
 (defprotocol primitive 
              (intersect [this ray])
@@ -92,6 +103,22 @@
            (get-normal [this pos]
                        normal))
 
+
+
+;; returns the value of prop from material record within prim
+(defn mat-prop [prop prim]
+  (prop (:material prim)))
+
+
+
+
+;; SCENE 
+;; ---------------------------------------------
+;;
+;;
+;;
+
+;; holds all the elements of the scene 
 (def Scene (atom []))
 
 (defn add-to-scene [x]
@@ -113,8 +140,4 @@
               (Sphere. [2 5 1] 0.1 "" true
                        (Material. [0.7 0.7 0.9] 0 0)))]
     (reset! Scene (vec init-prims))))
-
-
-  
-
 
