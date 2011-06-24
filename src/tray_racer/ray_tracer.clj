@@ -3,40 +3,44 @@
   (:require [clojure.pprint :as p])
   (:require [tray-racer.vec3 :as v])
   (:require [tray-racer.scene :as s])
+  (:use tray-racer.utils)
   (:use clojure.stacktrace)
   (:use alex-and-georges.debug-repl)
   (:use [rosado.processing]))
 
-(def p p/pprint)
-
-;(def rrr (Ray. [-5.5 -0.5 0] [0 0 1]))
-;(def bbb (get-prim-hit-at rrr))   
-;(calc-color bbb)
-
 (s/init-scene)
 
+; origin of rays to be traced in world coordinates
 (def o [0 0 -5])
-(def real-d [200 150])
-(def proj-d [[-4 4] [3 -3]])
+
+; dimensions of program window in screen pixels
+(def window-dim [200 150])
+
+; projection plane location world coordinates 
+(def proj-plane-location [[-4 4] [3 -3] 3])
 
 ;; dir must not be [0 0 0]  
 (defrecord Ray [orig dir])
 
+;; returns a point along the ray
 (defn ray-point [ray t]
+  {:pre [(and (>= t 0) (<= t 1))]}
   (v/+ (v/* (:dir ray) t)
        (:orig ray)))
 
-(defn map-to-range [dist [r1 r2]]
-  (let [r (- r2 r1)
-        dist-r (* dist r)
-        corr (+ dist-r r1)]
-    corr))
+;; Given coor, a point in screen pixels on program window,
+;; returns a point in world coordinates on the projection
+;; plane.
+(defn real-coord->proj-coord [coord]
+  (let [ratios (map / coord window-dim)
+        px (map-to-range (nth ratios 0) (nth proj-plane-location 0))
+        py (map-to-range (nth ratios 1) (nth proj-plane-location 1))
+        pz (nth proj-plane-location 2)]
+    (vector px py pz)))
+      
 
-(defn real->proj [coor]
-  (let [rats (map / coor real-d)
-        proj (vec (map map-to-range rats proj-d))]
-    proj))
-
+; Returns the first primitive in the scene hit by  
+; ray or returns nil if no primitives are hit
 (defn get-prim-hit-at [ray] 
   (if-let [prim-hit (->>
                    @s/Scene
@@ -67,39 +71,35 @@
               (recur color (next lights))))
           color)))))
 
-(defn iterate-with-end [f x] 
-  (let [next-x (f x)]
-    (if (= next-x nil)
-      (list x)
-      (cons x (lazy-seq (iterate-with-end f next-x))))))
 
-(def vn 
-  (let [[rx ry] (map dec real-d)]
-    (letfn [(gen-f [[x y]]
-                   (cond
-                     (and (>= x rx) (>= y ry))
-                     nil
-                     (>= y ry) 
-                     [(inc x) 0]
-                     :else 
-                     [x (inc y)]))]
-      (iterate-with-end gen-f [0 0]))))
+; A list of all the screen window coordinates. 
+; It is used for calculating color values. 
+;
+(def window-coords
+  (let [[rx ry] (map dec window-dim)]
+    (letfn [(gen-next-coord [[x y]]
+                           (cond
+                             (and (>= x rx) (>= y ry)) nil
+                             (>= y ry)  [(inc x) 0]
+                             :else [x (inc y)]) )]
+      (iterate-until-end gen-next-coord [0 0]))))
 
-(def get-vn
-  (let [vna (atom vn)]
-    (fn []
-      (let [v (first @vna)]
-        (swap! vna rest)
-        v))))
-
-(defn fire []
-  (when-let [[x y] (seq (get-vn))]
-    (let [proj-coor (real->proj [x y])
-          dir (vec (concat proj-coor [3]))
-          ray (Ray. o dir)]
+; Takes in a window coordinate, translates it to a point on
+; the projection plane, traces a ray that goes through that
+; point computing the resulting color, then finally it sets
+; the window coordinate to this color. 
+;
+(defn fire-ray-from [[x y]]
+    (let [proj-coord (real-coord->proj-coord [x y])
+          ray (Ray. o proj-coord)]
       (if-let [hit (get-prim-hit-at ray)]
         (let [c (map c1->c255 (calc-color hit))]
           (set-pixel x y (apply color c)))
-        (set-pixel x y (color 0 0 0))))))
+        (set-pixel x y (color 0 0 0)))))
 
+; Fires the next ray to be traced.
+;
+(def fire 
+  (let [delayed-firings (atom (map fire-ray-from window-coords))]
+    (fn [] (do-one delayed-firings))))
 
