@@ -77,11 +77,10 @@
   (if-let [first-prim-hit (->>
                    @s/Scene
                    (map #(s/intersect % ray))
-                   (filter #(number? (second %)))
-                   (sort-by second <)
+                   (filter #(number? (:t %)))
+                   (sort-by :t <)
                    (first))]
-    [(first first-prim-hit) (ray-point ray (second first-prim-hit))]
-    ; XXX make intersect return something less messy
+    (assoc first-prim-hit :hit-point (ray-point ray (:t first-prim-hit)))
     nil))
 
 (defn c1->c255 [x]
@@ -91,25 +90,25 @@
 (def no-color [0 0 0])
 
 ; Returns the color contributed by light at hit-point. 
-(defn color-from-light [prim hit-point n light]
+(defn color-from-light [{:keys [prim-hit hit-point n]} light]
   (let [l (v/norm (v/- (:center light) hit-point))
         light-incidence (v/dot n l)
-        diffuse-component (* light-incidence (s/mat-prop :diffuse prim))]
+        diffuse-component (* light-incidence (s/mat-prop :diffuse prim-hit))]
     (if (> diffuse-component 0) 
       (reduce v/* [diffuse-component 
                    (s/mat-prop :color light) 
-                   (s/mat-prop :color prim)])
+                   (s/mat-prop :color prim-hit)])
       no-color)))
 
 ; Return the color at hit-point.
-(defn calc-color [[prim hit-point]]
-  (if (:is-light prim) 
+(defn calc-color [{:keys [prim-hit hit-point] :as hit-info}]
+  (if (:is-light prim-hit) 
     (map c1->c255 full-bright-color)
-    (let [n (s/get-normal prim hit-point)
+    (let [n (s/get-normal prim-hit hit-point)
+          hit-info-2 (assoc hit-info :n n)
           lights (s/get-lights)
-          color (reduce v/+ 
-                        (map (partial color-from-light prim hit-point n)
-                             lights))]
+          color-from-light (partial color-from-light hit-info-2)
+          color (reduce v/+ (map color-from-light lights))]
       (map c1->c255 color))))
 
 
@@ -121,8 +120,8 @@
 (defn fire-ray-from [[x y]]
     (let [proj-coord (real-coord->proj-coord [x y])
           ray (Ray. o proj-coord)]
-      (if-let [hit (first-prim-hit-by ray)]
-        (let [color-val (calc-color hit)]
+      (if-let [hit-info (first-prim-hit-by ray)]
+        (let [color-val (calc-color hit-info)]
           (set-pixel x y (apply color color-val)))
         (set-pixel x y (apply color no-color)))))
 

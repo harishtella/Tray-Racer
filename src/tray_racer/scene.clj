@@ -1,6 +1,7 @@
 (ns tray-racer.scene
   (:require [clojure.contrib.math :as m])
   (:require [tray-racer.vec3 :as v])
+  (:require [tray-racer.ray-tracer :as rt])
   (:require [clojure.pprint :as p])
   (:use alex-and-georges.debug-repl))
 
@@ -57,14 +58,11 @@
                                 t1 (max t0-t t1-t)]
                             (cond
                               ;; sphere in rays reverse path
-                              (< t1 0)
-                              [this 'miss]
+                              (< t1 0) {:prim-hit this :t 'miss}
                               ;; hit from inside sphere
-                              (< t0 0)
-                              [this 'inside-hit]
+                              (< t0 0) {:prim-hit this :t 'inside-hit}
                               ;; OK hit
-                              :else 
-                              [this t0])))))
+                              :else {:prim-hit this :t t0})))))
            (get-normal [this pos]
                        (v/* (v/- pos center)
                                 (/ 1 (* rad rad)))))
@@ -81,9 +79,9 @@
                                              (v/dot normal (:orig ray))))
                                        den)]
                             (if (<= dist 0)  
-                              [this 'miss]
-                              [this dist]))
-                          [this 'miss])))
+                              {:prim-hit this :t 'miss}
+                              {:prim-hit this :t dist}))
+                          {:prim-hit this :t 'miss})))
            (get-normal [this pos]
                        normal))
 
@@ -96,9 +94,9 @@
                                    (v/dot (v/- p (:orig ray)) normal)
                                    den)]
                         (cond
-                          (= den 0) [this 'miss]
-                          (<= dist 0) [this 'miss]
-                          :else [this dist])))
+                          (= den 0) {:prim-hit this :t 'miss} 
+                          (<= dist 0) {:prim-hit this :t 'miss}
+                          :else {:prim-hit this :t dist})))
            (get-normal [this pos]
                        normal))
 
