@@ -26,9 +26,19 @@
 ;;
 ;;
 ;;
-; TODO 
 (defprotocol primitive 
+
+             ; given a ray, this return a map with 2 keys
+             ; 1. :prim-hit - the primitive record
+             ; 2. :hit-point - a distance along ray where it hits
+             ;                 the primitive or a symbol describing 
+             ;                 a miss. 
+             ;                 
              (intersect [this ray])
+
+             ; give pos, a point on the primitive,
+             ; this returns a normal vector at the point
+             ;
              (get-normal [this pos]))
 
 (defrecord Sphere [center rad name is-light material]
@@ -102,7 +112,7 @@
 
 
 
-;; returns the value of prop from material record within prim
+;; returns the value of prop from the material record within prim
 (defn mat-prop [prop prim]
   (prop (:material prim)))
 

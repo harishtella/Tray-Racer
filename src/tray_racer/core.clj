@@ -18,7 +18,7 @@
 
 
 ; calls the fire function in ray-tracer.clj 
-; which does all the hard work
+; which kicks off all the hard work
 ;
 (defn draw []
   (rt/fire))
