@@ -1,4 +1,5 @@
 (ns tray-racer.core
+  (:gen-class)
   (:require [tray-racer.ray-tracer :as rt])
   (:require [tray-racer.scene :as s])
   (:use alex-and-georges.debug-repl)
