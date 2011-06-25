@@ -59,7 +59,7 @@
 ;;
 
 
-;; Given coor, a point in screen pixels on program window,
+;; Given coord, a point in screen pixels on program window,
 ;; returns a point in world coordinates on the projection
 ;; plane.
 (defn real-coord->proj-coord [coord]
@@ -83,7 +83,6 @@
     [(first first-prim-hit) (ray-point ray (second first-prim-hit))]
     ; XXX make intersect return something less messy
     nil))
-
 
 (defn c1->c255 [x]
   (map-to-range x [0 255]))
@@ -123,9 +122,9 @@
     (let [proj-coord (real-coord->proj-coord [x y])
           ray (Ray. o proj-coord)]
       (if-let [hit (first-prim-hit-by ray)]
-        (let [c (calc-color hit)]
-          (set-pixel x y (apply color c)))
-        (set-pixel x y (color 0 0 0)))))
+        (let [color-val (calc-color hit)]
+          (set-pixel x y (apply color color-val)))
+        (set-pixel x y (apply color no-color)))))
 
 ; Fires the next ray to be traced.
 ;
