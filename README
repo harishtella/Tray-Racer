@@ -2,7 +2,7 @@
 
 A simple ray tracer for experimenting with functional programming techniques
 
-Inspired by an article by Jacco Bikker @ DevMaster.net
+Based on an article by Jacco Bikker @ DevMaster.net
 http://www.devmaster.net/articles/raytracing_series/part1.php
 
 ## Usage
