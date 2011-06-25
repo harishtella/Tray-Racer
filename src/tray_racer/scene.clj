@@ -25,7 +25,7 @@
 ;;
 ;;
 ;;
-
+; TODO 
 (defprotocol primitive 
              (intersect [this ray])
              (get-normal [this pos]))
@@ -37,7 +37,6 @@
                             d (:dir ray)
                             A (v/dot d d)
                             B (* 2 (v/dot o-c d))
-                            ;; XXX is v/dot commutative with vec/* ?
                             C (- (v/dot o-c o-c)
                                  (* rad rad))
                             det (- (m/expt B 2)
@@ -73,7 +72,7 @@
 ;; vec3 float 
 (defrecord Plane [normal d name is-light material]
            primitive
-           ;; XXX not sure how this works
+           ;; TODO: check this math 
            (intersect [this ray]
                       (let [den (v/dot normal (:dir ray))]
                         (if (not= 0 den)

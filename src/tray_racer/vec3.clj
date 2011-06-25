@@ -10,7 +10,7 @@
     (if vs
       (and v-t (apply vec3? vs))
       v-t)))
-; XXX better way to filter for truthiness?
+; TODO: is there a better way to filter for truthiness?
 
 (defn len [v] 
   {:pre [(vec3? v)]

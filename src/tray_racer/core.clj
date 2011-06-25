@@ -1,20 +1,27 @@
 (ns tray-racer.core
   (:require [tray-racer.ray-tracer :as rt])
+  (:require [tray-racer.scene :as s])
   (:use alex-and-georges.debug-repl)
   (:use [rosado.processing] [rosado.processing.applet]))
 
-; calls the fire function in ray-tracer.clj 
-; which does all the hard work
-(defn draw []
-  (rt/fire))
 
 (defn setup []
   "Runs once."
   (smooth)
   (background-float 225)
   (stroke-float 10)
-  ;; call the draw function as often as possible 
-  (framerate 9999)) 
+  ;; setting framerate to a really high value gets the draw
+  ;; function to be called as often as possible 
+  (framerate 9999999) 
+  ;; initialize to the scene to be ray-traced
+  (s/init-scene))
+
+
+; calls the fire function in ray-tracer.clj 
+; which does all the hard work
+;
+(defn draw []
+  (rt/fire))
 
 (defapplet tr :title "tray-racer: number one super graphics"
   :setup setup :draw draw :size rt/window-dim)
