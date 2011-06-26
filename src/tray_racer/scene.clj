@@ -1,3 +1,8 @@
+;; scene.clj 
+;; ----------------------------------
+;; code related to the scene that gets ray traced 
+
+
 (ns tray-racer.scene
   (:require [clojure.contrib.math :as m])
   (:require [tray-racer.vec3 :as v])
@@ -26,19 +31,21 @@
 ;;
 ;;
 ;;
+
 (defprotocol primitive 
 
-             ; given a ray, this return a map with 2 keys
-             ; 1. :prim-hit - the primitive record
-             ; 2. :hit-point - a distance along ray where it hits
-             ;                 the primitive or a symbol describing 
-             ;                 a miss. 
-             ;                 
+             ;; given a ray, this function returns a map with 2 keys
+             ;;
+             ;; #1 :prim-hit - will be the primitive record
+             ;; #2 :t        - will be the distance along the
+             ;; ray at which the ray hits the primitive or it
+             ;; will be a symbol declaring the ray missed the
+             ;; primitive 
              (intersect [this ray])
 
-             ; give pos, a point on the primitive,
-             ; this returns a normal vector at the point
-             ;
+             ;; given pos, a point on the primitive,
+             ;; this fucntion returns a normal vector at pos
+             ;;
              (get-normal [this pos]))
 
 (defrecord Sphere [center rad name is-light material]

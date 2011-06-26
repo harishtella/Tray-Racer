@@ -1,3 +1,8 @@
+;; ray_tracer.clj 
+;; ----------------------------------
+;; the heart of tray-racer
+
+
 (ns tray-racer.ray-tracer
   (:require [clojure.contrib.math :as m])
   (:require [clojure.pprint :as p])
@@ -16,18 +21,20 @@
 ;;
 ;;
 
-; origin of rays to be traced in world coordinates
+;; origin of the rays to be traced (in world coordinates)
+;;
 (def o [0 0 -5])
 
-; projection plane location world coordinates 
+;; projection plane location (in world coordinates)
+;;
 (def proj-plane-location [[-4 4] [3 -3] 3])
 
-; dimensions of program window in screen pixels
+;; dimensions of program window in pixels
+;;
 (def window-dim [200 150])
 
-; A list of all the screen window coordinates. 
-; It is used for calculating color values. 
-;
+;; a list of all the window coordinates. 
+;;
 (def window-coords
   (let [[rx ry] (map dec window-dim)]
     (letfn [(gen-next-coord [[x y]]
@@ -47,6 +54,7 @@
 (defrecord Ray [orig dir])
 
 ;; returns a point along the ray
+;;
 (defn ray-point [ray t]
   (v/+ (v/* (:dir ray) t)
        (:orig ray)))
@@ -59,9 +67,10 @@
 ;;
 
 
-;; Given coord, a point in screen pixels on program window,
+;; Given coord, a point in window coordinates, this function
 ;; returns a point in world coordinates on the projection
 ;; plane.
+;;
 (defn real-coord->proj-coord [coord]
   (let [ratios (map / coord window-dim)
         px (map-to-range (nth ratios 0) (nth proj-plane-location 0))
@@ -69,10 +78,16 @@
         pz (nth proj-plane-location 2)]
     (vector px py pz)))
       
-; Returns a vector with:
-; 1. the first primitive hit by ray
-; 2. the point at which it is hit 
-; If the ray doesn't not hit any primitives nil is returned 
+;; Returns a map containing: 
+;; :prim-hit - the first primitive hit by ray
+;; :t - the distance along the ray at which it hits the
+;;      first primitve 
+;; :hit-point - the point at which the ray hits the
+;;              first primitive
+;;              
+;; OR 
+;; if the ray does not hit any primitives, nil is returned  
+;;
 (defn first-prim-hit-by [ray] 
   (if-let [first-prim-hit (->>
                    @s/Scene
@@ -89,7 +104,8 @@
 (def full-bright-color [1 1 1])
 (def no-color [0 0 0])
 
-; Returns the color contributed by light at hit-point. 
+;; Returns the color contributed by a signle light at hit-point. 
+;;
 (defn color-from-light [{:keys [prim-hit hit-point n]} light]
   (let [l (v/norm (v/- (:center light) hit-point))
         light-incidence (v/dot n l)
@@ -100,22 +116,26 @@
                    (s/mat-prop :color prim-hit)])
       no-color)))
 
-; Return the color at hit-point.
+;; Returns the color at hit-point.
+;
 (defn calc-color [{:keys [prim-hit hit-point] :as hit-info}]
   (if (:is-light prim-hit) 
     (map c1->c255 full-bright-color)
     (let [n (s/get-normal prim-hit hit-point)
           hit-info-2 (assoc hit-info :n n)
           lights (s/get-lights)
+          ;; TODO use binding to simplify this
           color-from-light (partial color-from-light hit-info-2)
           color (reduce v/+ (map color-from-light lights))]
       (map c1->c255 color))))
 
 
 ; Takes in a window coordinate, translates it to a point on
-; the projection plane, traces a ray that goes through that
-; point computing the resulting color, then finally it sets
-; the window coordinate to this color. 
+; the projection plane, and traces a ray that goes through
+; this point. If the ray hits a primitive, the original
+; window coordinate is set to the appropriate color value.
+; Otherwise the original window coordinate is set to be
+; black. 
 ;
 (defn fire-ray-from [[x y]]
     (let [proj-coord (real-coord->proj-coord [x y])
@@ -125,7 +145,12 @@
           (set-pixel x y (apply color color-val)))
         (set-pixel x y (apply color no-color)))))
 
-; Fires the next ray to be traced.
+; A function that executes the next element of
+; delayed-firings. This in turn will fire a ray and the
+; resulting color value will be drawn to the screen.
+;
+; When delayed-firings is empty, a color will have been
+; computed for every pixel in the program's window. 
 ;
 (def fire 
   (let [delayed-firings (atom (map fire-ray-from window-coords))]

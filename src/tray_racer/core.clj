@@ -1,3 +1,7 @@
+;; core.clj 
+;; ----------------------------------
+;; the main application file
+
 (ns tray-racer.core
   (:gen-class)
   (:require [tray-racer.ray-tracer :as rt])
@@ -11,16 +15,20 @@
   (smooth)
   (background-float 225)
   (stroke-float 10)
-  ;; setting framerate to a really high value gets the draw
+
+  ;; Setting framerate to a really high value gets the draw
   ;; function to be called as often as possible 
+  ;;
   (framerate 9999999) 
-  ;; initialize to the scene to be ray-traced
+
+  ;; Initialize to the scene to be ray-traced
+  ;;
   (s/init-scene))
 
 
-; calls the fire function in ray-tracer.clj 
-; which kicks off all the hard work
-;
+;; Gets called everytime a frame is to be drawn,
+;; Draw in turn calls the fire function in ray-tracer.clj 
+;;
 (defn draw []
   (rt/fire))
 

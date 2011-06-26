@@ -1,5 +1,8 @@
-(ns tray-racer.utils)
+;; utils.clj 
+;; ----------------------------------
+;; some misc utils functions
 
+(ns tray-racer.utils)
 
 ; Maps t, a value between 0 and 1, 
 ; to a value between r1 and r2.

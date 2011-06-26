@@ -1,3 +1,7 @@
+;; vec3.clj 
+;; ----------------------------------
+;; basic vector operations 
+
 (ns tray-racer.vec3
   (:require [clojure.contrib.math :as m])
   (:refer-clojure :rename {+ cc+ - cc- * cc*})
@@ -10,7 +14,7 @@
     (if vs
       (and v-t (apply vec3? vs))
       v-t)))
-; TODO: is there a better way to filter for truthiness?
+;; TODO: is there a better way to filter for truthiness?
 
 (defn len [v] 
   {:pre [(vec3? v)]
