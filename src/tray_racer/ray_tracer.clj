@@ -17,9 +17,6 @@
 ;; COORDINATES
 ;; needed for ray-tracing 
 ;; ---------------------------------------------
-;;
-;;
-;;
 
 ;; origin of the rays to be traced (in world coordinates)
 (def o [0 0 -5])
@@ -43,9 +40,6 @@
 
 ;; RAYS
 ;; ---------------------------------------------
-;;
-;;
-;;
 
 (defrecord Ray [orig dir])
 
@@ -57,9 +51,6 @@
 
 ;; RAY-TRACING
 ;; ---------------------------------------------
-;;
-;;
-;;
 
 (defn real-coord->proj-coord [coord]
   "Given coord, a point in window coordinates, this function

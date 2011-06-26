@@ -13,9 +13,7 @@
 
 ;; MATERIALS
 ;; ---------------------------------------------
-;;
-;;
-;;
+
 
 ;; vec3 float float
 (defrecord Material [color reflection diffuse])
@@ -25,12 +23,8 @@
 
 
 
-
 ;; PRIMITIVES 
 ;; ---------------------------------------------
-;;
-;;
-;;
 
 (defprotocol primitive 
 
@@ -128,9 +122,6 @@
 
 ;; SCENE 
 ;; ---------------------------------------------
-;;
-;;
-;;
 
 ;; holds all the elements of the scene 
 (def Scene (atom []))
