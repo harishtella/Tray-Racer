@@ -26,10 +26,10 @@
   (s/init-scene))
 
 
-;; Gets called everytime a frame is to be drawn,
-;; Draw in turn calls the fire function in ray-tracer.clj 
-;;
+
 (defn draw []
+  "Gets called everytime a frame is to be drawn, Draw in turn
+  calls the fire function in ray-tracer.clj "
   (rt/fire))
 
 (defapplet tr :title "tray-racer: number one super graphics"

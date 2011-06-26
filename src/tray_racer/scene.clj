@@ -119,8 +119,8 @@
 
 
 
-;; returns the value of prop from the material record within prim
 (defn mat-prop [prop prim]
+  "returns the value of prop from the material record within prim"
   (prop (:material prim)))
 
 
