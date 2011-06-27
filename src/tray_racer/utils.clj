@@ -8,10 +8,8 @@
 (defn map-to-range [t [r1 r2]]
   {:pre [(and (>= t 0) (<= t 1))]
    :post [(number? %)]}
-
   "Maps t, a value between 0 and 1, 
   to a value between r1 and r2."
-
   (+ r1 (* t (- r2 r1))))
 
 
@@ -21,7 +19,6 @@
   f to the last term. If f applied to the last term 
   returns nil then the sequence ends with the last 
   term."
-
   (let [next-x (f x)]
     (if (= next-x nil)
       (list x)
@@ -33,7 +30,6 @@
   side-effects.  do-one evaluates the first item of this
   list and then sets the atom to contain the rest of the
   unevaluated list."
-
   (let [t (first @todos)]
     (swap! todos rest)))
 

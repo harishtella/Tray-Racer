@@ -56,7 +56,6 @@
   "Given coord, a point in window coordinates, this function
   returns a point in world coordinates on the projection
   plane."
-
   (let [ratios (map / coord window-dim)
         px (map-to-range (nth ratios 0) (nth proj-plane-location 0))
         py (map-to-range (nth ratios 1) (nth proj-plane-location 1))
@@ -74,7 +73,6 @@
 
   OR 
   if the ray does not hit any primitives, nil is returned "
-
   (if-let [first-prim-hit (->>
                             @s/Scene
                             (map #(s/intersect % ray))
@@ -92,7 +90,6 @@
 
 (defn color-from-light [{:keys [prim-hit hit-point n]} light]
   "Returns the color contributed by a single light at hit-point."
-  
   (let [l (v/norm (v/- (:center light) hit-point))
         light-incidence (v/dot n l)
         diffuse-component (* light-incidence (s/mat-prop :diffuse prim-hit))]
@@ -105,7 +102,6 @@
 
 (defn calc-color [{:keys [prim-hit hit-point] :as hit-info}]
   "Returns the color at hit-point."
-
   (if (:is-light prim-hit) 
     (map c1->c255 full-bright-color)
     (let [n (s/get-normal prim-hit hit-point)
@@ -125,7 +121,6 @@
   window coordinate is set to the appropriate color value.
   Otherwise the original window coordinate is set to be
   black. "
-
   (let [proj-coord (real-coord->proj-coord [x y])
         ray (Ray. o proj-coord)]
     (if-let [hit-info (first-prim-hit-by ray)]
