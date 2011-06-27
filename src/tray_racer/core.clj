@@ -28,7 +28,7 @@
 
 
 (defn draw []
-  "Gets called everytime a frame is to be drawn, Draw in turn
+  "Gets called every time a frame is to be drawn, Draw in turn
   calls the fire function in ray-tracer.clj "
   (rt/fire))
 
