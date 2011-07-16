@@ -107,7 +107,6 @@
     (let [n (s/get-normal prim-hit hit-point)
           hit-info-2 (assoc hit-info :n n)
           lights (s/get-lights)
-          ;; TODO use binding to simplify this
           color-from-light (partial color-from-light hit-info-2)
           color (reduce v/+ (map color-from-light lights))]
       (map c1->c255 color))))
