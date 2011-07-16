@@ -81,7 +81,6 @@
 ;; vec3 float 
 (defrecord Plane [normal d name is-light material]
            primitive
-           ;; TODO: check this math 
            (intersect [this ray]
                       (let [den (v/dot normal (:dir ray))]
                         (if (not= 0 den)
