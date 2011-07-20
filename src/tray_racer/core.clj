@@ -7,13 +7,14 @@
   (:require [tray-racer.ray-tracer :as rt])
   (:require [tray-racer.scene :as s])
   (:use alex-and-georges.debug-repl)
-  (:use [rosado.processing] [rosado.processing.applet]))
-
+  (:use [rosado.processing])
+  (:import (javax.swing JFrame))
+  (:import (processing.core PApplet)))
 
 (defn setup []
   "Runs once."
+  (apply size rt/window-dim)
   (smooth)
-  (background-float 225)
   (stroke-float 10)
 
   ;; Setting framerate to a really high value gets the draw
@@ -25,16 +26,28 @@
   ;;
   (s/init-scene))
 
-
-
 (defn draw []
   "Gets called every time a frame is to be drawn, Draw in turn
   calls the fire function in ray-tracer.clj "
   (rt/fire))
 
-(defapplet tr :title "tray-racer: number one super graphics"
-  :setup setup :draw draw :size rt/window-dim)
- 
+(def swing-frame (JFrame. "Ray tracing action"))
+(def p-app
+     (proxy [PApplet] []
+       (setup []
+              (binding [*applet* this]
+                (setup)))
+       (draw []
+             (binding [*applet* this]
+               (draw)))))
+
 (defn -main [& args] 
-  (run tr))
+  (.init p-app)
+  (doto swing-frame
+    (.setResizable false)
+    (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
+    (.setSize (rt/window-dim 0) (rt/window-dim 1))
+    (.add p-app)
+    (.pack)
+    (.show)))
 
