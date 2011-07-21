@@ -56,7 +56,7 @@
                         (if (zero? A)
                           (p/pprint d))
                         (if (< det 0) 
-                          [this 'miss]
+                          {:prim-hit this :t 'miss}
                           (let [sqrt-det (m/sqrt det)
                                 q (/ 
                                     ((if (< B 0) + -) 
