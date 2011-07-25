@@ -9,37 +9,45 @@
   (:use alex-and-georges.debug-repl)
   (:use [rosado.processing])
   (:import (javax.swing JFrame))
-  (:import (processing.core PApplet)))
+  (:import (processing.core PApplet))
+  (:import (processing.core PImage)))
 
-(defn setup []
+(def ray-tracing-agent (agent {}))
+(def canvas (PImage. 200 150 RGB))
+
+(defn my-setup []
   "Runs once."
   (apply size rt/window-dim)
   (smooth)
   (stroke-float 10)
-
-  ;; Setting framerate to a really high value gets the draw
-  ;; function to be called as often as possible 
-  ;;
-  (framerate 9999999) 
+  (framerate 5) 
 
   ;; Initialize to the scene to be ray-traced
   ;;
-  (s/init-scene))
+  (s/init-scene)
+  (rt/start-up ray-tracing-agent))
 
-(defn draw []
+(defn my-draw []
   "Gets called every time a frame is to be drawn, Draw in turn
   calls the fire function in ray-tracer.clj "
-  (rt/fire))
+  (let [calculated-pixels @ray-tracing-agent]
+    (.loadPixels canvas)
+    (map calculated-pixels (fn [[[x y] color-val]] 
+                             (let [index (+ (* y (rt/window-dim 0)) x)
+                                   color-val (apply color [50 50 50])]
+                               (set! (.pixels canvas) index)) color-val))
+    (.updatePixels canvas)
+    (image canvas 0 0)))
 
 (def swing-frame (JFrame. "Ray tracing action"))
 (def p-app
      (proxy [PApplet] []
        (setup []
               (binding [*applet* this]
-                (setup)))
+                (my-setup)))
        (draw []
              (binding [*applet* this]
-               (draw)))))
+               (my-draw)))))
 
 (defn -main [& args] 
   (.init p-app)

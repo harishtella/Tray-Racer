@@ -124,8 +124,8 @@
         ray (Ray. o proj-coord)]
     (if-let [hit-info (first-prim-hit-by ray)]
       (let [color-val (calc-color hit-info)]
-        (set-pixel x y (apply color color-val)))
-      (set-pixel x y (apply color no-color)))))
+        color-val)
+      no-color)))
 
 ;;  A function that executes the next element of
 ;;  delayed-firings. This in turn will fire a ray and the
@@ -137,4 +137,12 @@
 (def fire 
   (let [delayed-firings (atom (map fire-ray-from window-coords))]
     (fn [] (do-one delayed-firings))))
+  
+(defn add-fired-ray-result [results coor]
+  (assoc results coor (fire-ray-from coor)))
+
+(defn start-up [an-agent]
+  (doseq 
+    [coor window-coords]
+    (send-off an-agent add-fired-ray-result coor)))
 
