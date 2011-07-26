@@ -13,16 +13,14 @@
   (:import (processing.core PImage)))
 
 (def ray-tracing-agent (agent {}))
-(def canvas (PImage. 100 75 RGB))
+(def canvas (PImage. 200 150 RGB))
 
 (defn my-setup []
   "Runs once."
   (apply size rt/window-dim)
   (smooth)
   (stroke-float 10)
-  (framerate 5) 
-
-  (def canvas (load-image "f.jpg"))
+  (framerate 1) 
 
   ;; Initialize to the scene to be ray-traced
   ;;

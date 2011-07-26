@@ -25,7 +25,7 @@
 (def proj-plane-location [[-4 4] [3 -3] 3])
 
 ;; dimensions of program window in pixels
-(def window-dim [100 75])
+(def window-dim [200 150])
 
 ;; a list of all the window coordinates. 
 (def window-coords
@@ -144,5 +144,5 @@
 (defn start-up [an-agent]
   (doseq 
     [coor window-coords]
-    (send-off an-agent add-fired-ray-result coor)))
+    (send an-agent add-fired-ray-result coor)))
 
