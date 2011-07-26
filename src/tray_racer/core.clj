@@ -13,7 +13,7 @@
   (:import (processing.core PImage)))
 
 (def ray-tracing-agent (agent {}))
-(def canvas (PImage. 200 150 RGB))
+(def canvas (PImage. 100 75 RGB))
 
 (defn my-setup []
   "Runs once."
@@ -21,6 +21,8 @@
   (smooth)
   (stroke-float 10)
   (framerate 5) 
+
+  (def canvas (load-image "f.jpg"))
 
   ;; Initialize to the scene to be ray-traced
   ;;
@@ -32,10 +34,12 @@
   calls the fire function in ray-tracer.clj "
   (let [calculated-pixels @ray-tracing-agent]
     (.loadPixels canvas)
-    (map calculated-pixels (fn [[[x y] color-val]] 
-                             (let [index (+ (* y (rt/window-dim 0)) x)
-                                   color-val (apply color [50 50 50])]
-                               (set! (.pixels canvas) index)) color-val))
+    (dorun 
+      (map (fn [[[x y] color-val]] 
+             (let [index (+ (* y (rt/window-dim 0)) x)
+                   color-val (apply color color-val)]
+               (aset (.pixels canvas) index color-val)))
+           calculated-pixels))
     (.updatePixels canvas)
     (image canvas 0 0)))
 
