@@ -12,36 +12,43 @@
   (:import (processing.core PApplet))
   (:import (processing.core PImage)))
 
-(def ray-tracing-agent (agent {}))
-(def canvas (PImage. 200 150 RGB))
 
+(defn color-helper [rgb-list]
+  "convert a list of RGB values to processing.org 
+  color value, which is represented by an integer"
+  (let [temp-app (PApplet.)]
+    (binding [*applet* temp-app]
+      (apply color rgb-list))))
+
+;; a large vector to hold screen pixel color values,
+;; initialized to the color black
+;;
+(def agent-init-state (vec 
+                        (repeat (reduce * rt/window-dim) 
+                                (color-helper [0 0 0]))))
+
+(def ray-tracing-agent (agent agent-init-state))
+(def canvas (PImage. (rt/window-dim 0) (rt/window-dim 1) RGB))
+ 
 (defn my-setup []
   "Runs once."
   (apply size rt/window-dim)
   (smooth)
   (stroke-float 10)
-  (framerate 1) 
+  (framerate 15) 
 
-  ;; Initialize to the scene to be ray-traced
-  ;;
   (s/init-scene)
-  (rt/start-up ray-tracing-agent))
+  (rt/start-up ray-tracing-agent color-helper))
 
 (defn my-draw []
-  "Gets called every time a frame is to be drawn, Draw in turn
-  calls the fire function in ray-tracer.clj "
-  (let [calculated-pixels @ray-tracing-agent]
+  (let [calculated-pixels @ray-tracing-agent
+        calculated-pixels (int-array calculated-pixels)]
     (.loadPixels canvas)
-    (dorun 
-      (map (fn [[[x y] color-val]] 
-             (let [index (+ (* y (rt/window-dim 0)) x)
-                   color-val (apply color color-val)]
-               (aset (.pixels canvas) index color-val)))
-           calculated-pixels))
+    (set! (.pixels canvas) calculated-pixels)
     (.updatePixels canvas)
     (image canvas 0 0)))
 
-(def swing-frame (JFrame. "Ray tracing action"))
+(def swing-frame (JFrame. "Tray-Racer"))
 (def p-app
      (proxy [PApplet] []
        (setup []

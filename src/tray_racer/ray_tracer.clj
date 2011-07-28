@@ -138,11 +138,16 @@
   (let [delayed-firings (atom (map fire-ray-from window-coords))]
     (fn [] (do-one delayed-firings))))
   
-(defn add-fired-ray-result [results coor]
-  (assoc results coor (fire-ray-from coor)))
+(defn add-fired-ray-result [color-helper results coor]
+  (let [[x y] coor]
+    (assoc results 
+           (+ (* (window-dim 0) y) x)
+           (color-helper (fire-ray-from coor)))))
 
-(defn start-up [an-agent]
+(defn start-up [an-agent color-helper]
   (doseq 
     [coor window-coords]
-    (send an-agent add-fired-ray-result coor)))
+    (send an-agent 
+          (partial add-fired-ray-result color-helper) 
+          coor)))
 
