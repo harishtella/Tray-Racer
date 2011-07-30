@@ -12,13 +12,13 @@
   (:import (processing.core PApplet))
   (:import (processing.core PImage)))
 
-
-(defn color-helper [rgb-list]
-  "convert a list of RGB values to processing.org 
-  color value, which is represented by an integer"
+;convert a list of RGB values to processing.org 
+;color value, which is represented by an integer
+(def color-helper 
   (let [temp-app (PApplet.)]
-    (binding [*applet* temp-app]
-      (apply color rgb-list))))
+    (fn [rgb-list]
+      (binding [*applet* temp-app]
+        (apply color rgb-list)))))
 
 ;; a large vector to hold screen pixel color values,
 ;; initialized to the color black
