@@ -134,20 +134,28 @@
 ;;  When delayed-firings is empty, a color will have been
 ;;  computed for every pixel in the program's window. "
 ;;
-(def fire 
-  (let [delayed-firings (atom (map fire-ray-from window-coords))]
-    (fn [] (do-one delayed-firings))))
+
+;(def fire 
+;  (let [delayed-firings (atom (map fire-ray-from window-coords))]
+;    (fn [] (do-one delayed-firings))))
   
-(defn add-fired-ray-result [color-helper results coor]
-  (let [[x y] coor]
-    (assoc results 
-           (+ (* (window-dim 0) y) x)
-           (color-helper (fire-ray-from coor)))))
+(defn add-fired-ray-result [color-helper r c]
+  (loop [results r coords c]
+    (if (nil? coords)
+      results
+      (let [[c & cs] coords
+            [x y] c
+            new-results (assoc results 
+                               (+ (* (window-dim 0) y) x)
+                               (color-helper (fire-ray-from c)))]
+        (recur new-results cs)))))
+
+(def partition-size 1000)
 
 (defn start-up [an-agent color-helper]
   (doseq 
-    [coor window-coords]
+    [coords (partition partition-size partition-size () window-coords)]
     (send an-agent 
           (partial add-fired-ray-result color-helper) 
-          coor)))
+          coords)))
 
