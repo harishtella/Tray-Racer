@@ -133,15 +133,18 @@
 
 (defn init-scene []
   (let [init-prims 
-        (list (Plane. [0 1 0] 4.4 "plane" false 
-                      (Material. [0.4 0.3 0.3] 0 1.0))
-              (Sphere. [1 -0.8 5] 2.5 "big sphere" false 
-                       (Material. [0.7 0.7 0.7] 0.6 0.4))
-              (Sphere. [-5.5 -0.5 2] 2 "small sphere" false
-                       (Material. [0.7 0.7 1.0] 1.0 0.4))
-              (Sphere. [0 5 5] 0.1 "" true 
-                       (Material. [0.6 0.6 0.6] 0 0))
-              (Sphere. [2 5 1] 0.1 "" true
-                       (Material. [0.7 0.7 0.9] 0 0)))]
+        (list 
+          (Plane. [0 1 0] 4.4 "plane" false 
+                  (Material. [0.4 0.3 0.3] 0 1.0))
+          (Sphere. [0 -0.8 5] 2.5 "big green sphere" false 
+                   (Material. [0.0 0.9 0.0] 0.6 0.9))
+          (Sphere. [3 -0.8 0.5] 2.5 "big blue sphere" false 
+                   (Material. [0.0 0.0 0.8] 0.6 0.9))
+          (Sphere. [-5.5 -0.5 2] 2 "small red sphere" false
+                   (Material. [0.9 0.0 0.0] 1.0 0.9))
+          (Sphere. [0 5 5] 0.1 "" true 
+                   (Material. [0.6 0.6 0.6] 0 0))
+          (Sphere. [2 5 1] 0.1 "" true
+                   (Material. [0.7 0.7 0.9] 0 0)))]
     (reset! Scene (vec init-prims))))
 

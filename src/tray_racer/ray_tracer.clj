@@ -25,7 +25,7 @@
 (def proj-plane-location [[-4 4] [3 -3] 3])
 
 ;; dimensions of program window in pixels
-(def window-dim [400 300])
+(def window-dim [200 150])
 
 ;; a list of all the window coordinates. 
 (def window-coords
