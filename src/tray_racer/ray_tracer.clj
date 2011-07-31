@@ -25,7 +25,7 @@
 (def proj-plane-location [[-4 4] [3 -3] 3])
 
 ;; dimensions of program window in pixels
-(def window-dim [200 150])
+(def window-dim [400 300])
 
 ;; a list of all the window coordinates. 
 (def window-coords
@@ -127,32 +127,27 @@
         color-val)
       no-color)))
 
-;;  A function that executes the next element of
-;;  delayed-firings. This in turn will fire a ray and the
-;;  resulting color value will be drawn to the screen.
-;;
-;;  When delayed-firings is empty, a color will have been
-;;  computed for every pixel in the program's window. "
-;;
+(defn screen-coord->pixels-array-index [[x y]] 
+  (+ (* (window-dim 0) y) x))
 
-;(def fire 
-;  (let [delayed-firings (atom (map fire-ray-from window-coords))]
-;    (fn [] (do-one delayed-firings))))
-  
-(defn add-fired-ray-result [color-helper r c]
-  (loop [results r coords c]
+(defn add-fired-ray-result [color-helper pixel-colors coord-list]
+  "Calculates color values for all coordinates in coord-list
+  adding the results to the pixel-colors vector"
+  (loop [pixels pixel-colors coords coord-list]
     (if (nil? coords)
-      results
+      pixels
       (let [[c & cs] coords
-            [x y] c
-            new-results (assoc results 
-                               (+ (* (window-dim 0) y) x)
-                               (color-helper (fire-ray-from c)))]
-        (recur new-results cs)))))
+            new-pixels (assoc pixels 
+                              (screen-coord->pixels-array-index c)
+                              (color-helper (fire-ray-from c)))]
+        (recur new-pixels cs)))))
 
-(def partition-size 1000)
+(def partition-size 5000)
 
 (defn start-up [an-agent color-helper]
+  "sends off chunks of screen pixels coordinates (determined
+  by partition-size ) to have color values computed and added
+  to the agent's vector" 
   (doseq 
     [coords (partition partition-size partition-size () window-coords)]
     (send an-agent 

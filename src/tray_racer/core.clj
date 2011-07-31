@@ -12,22 +12,22 @@
   (:import (processing.core PApplet))
   (:import (processing.core PImage)))
 
-;convert a list of RGB values to processing.org 
-;color value, which is represented by an integer
+;; converts a list of RGB values to processing.org 
+;; color value 
 (def color-helper 
   (let [temp-app (PApplet.)]
     (fn [rgb-list]
       (binding [*applet* temp-app]
         (apply color rgb-list)))))
 
-;; a large vector to hold screen pixel color values,
-;; initialized to the color black
-;;
+;; initial state of the screen pixels: all black
 (def agent-init-state (vec 
                         (repeat (reduce * rt/window-dim) 
                                 (color-helper [0 0 0]))))
 
 (def ray-tracing-agent (agent agent-init-state))
+
+;; the object that actually gets drawn to the screen
 (def canvas (PImage. (rt/window-dim 0) (rt/window-dim 1) RGB))
  
 (defn my-setup []
@@ -41,6 +41,8 @@
   (rt/start-up ray-tracing-agent color-helper))
 
 (defn my-draw []
+  "sets the canvas contents to be the current state of the agent 
+  and then draws the canvas to the screen"
   (let [calculated-pixels @ray-tracing-agent
         calculated-pixels (int-array calculated-pixels)]
     (.loadPixels canvas)
