@@ -130,7 +130,7 @@
 (defn screen-coord->pixels-array-index [[x y]] 
   (+ (* (window-dim 0) y) x))
 
-(defn add-fired-ray-result [color-helper pixel-colors coord-list]
+(defn color-values-for-coords [color-helper pixel-colors coord-list]
   "Calculates color values for all coordinates in coord-list
   adding the results to the pixel-colors vector"
   (loop [pixels pixel-colors coords coord-list]
@@ -151,6 +151,6 @@
   (doseq 
     [coords (partition partition-size partition-size () window-coords)]
     (send an-agent 
-          (partial add-fired-ray-result color-helper) 
+          (partial color-values-for-coords color-helper) 
           coords)))
 
