@@ -142,14 +142,14 @@
                               (color-helper (fire-ray-from c)))]
         (recur new-pixels cs)))))
 
-(def partition-size 5000)
+(def chunk-size 5000)
 
 (defn start-up [an-agent color-helper]
-  "sends off chunks of screen pixels coordinates (determined
-  by partition-size ) to have color values computed and added
-  to the agent's vector" 
+  "sends off chunks of screen pixel coordinates to the agent
+  to have color values computed using the color-values-for-coords 
+  functions" 
   (doseq 
-    [coords (partition partition-size partition-size () window-coords)]
+    [coords (partition chunk-size chunk-size () window-coords)]
     (send an-agent 
           (partial color-values-for-coords color-helper) 
           coords)))
