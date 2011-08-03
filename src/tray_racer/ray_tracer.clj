@@ -147,7 +147,7 @@
 (defn start-up [an-agent color-helper]
   "sends off chunks of screen pixel coordinates to the agent
   to have color values computed using the color-values-for-coords 
-  functions" 
+  function" 
   (doseq 
     [coords (partition chunk-size chunk-size () window-coords)]
     (send an-agent 
