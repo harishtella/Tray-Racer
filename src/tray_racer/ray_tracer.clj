@@ -130,7 +130,7 @@
 (defn screen-coord->pixels-array-index [[x y]] 
   (+ (* (window-dim 0) y) x))
 
-(defn color-values-for-coords [color-helper pixel-colors coord-list]
+(defn color-values-for-coords [pixel-colors coord-list]
   "Calculates color values for all coordinates in coord-list
   adding the results to the pixel-colors vector"
   (loop [pixels pixel-colors coords coord-list]
@@ -144,13 +144,11 @@
 
 (def chunk-size 5000)
 
-(defn start-up [an-agent color-helper]
+(defn start-up [an-agent]
   "sends off chunks of screen pixel coordinates to the agent
   to have color values computed using the color-values-for-coords 
   function" 
   (doseq 
-    [coords (partition chunk-size chunk-size () window-coords)]
-    (send an-agent 
-          (partial color-values-for-coords color-helper) 
-          coords)))
+    [coords (partition-with-leftovers chunk-size window-coords)]
+    (send an-agent color-values-for-coords coords)))
 

@@ -6,19 +6,12 @@
   (:gen-class)
   (:require [tray-racer.ray-tracer :as rt])
   (:require [tray-racer.scene :as s])
+  (:use [tray-racer.utils :only (color-helper)])
   (:use alex-and-georges.debug-repl)
   (:use [rosado.processing])
   (:import (javax.swing JFrame))
   (:import (processing.core PApplet))
   (:import (processing.core PImage)))
-
-;; converts a list of RGB values to processing.org 
-;; color value 
-(def color-helper 
-  (let [temp-app (PApplet.)]
-    (fn [rgb-list]
-      (binding [*applet* temp-app]
-        (apply color rgb-list)))))
 
 ;; initial state of the screen pixels: all black
 (def agent-init-state (vec 
@@ -38,7 +31,7 @@
   (framerate 15) 
 
   (s/init-scene)
-  (rt/start-up ray-tracing-agent color-helper))
+  (rt/start-up ray-tracing-agent))
 
 (defn my-draw []
   "sets the canvas contents to be the current state of the agent 

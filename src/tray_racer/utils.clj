@@ -2,8 +2,23 @@
 ;; ----------------------------------
 ;; some misc utils functions
 
-(ns tray-racer.utils)
+(ns tray-racer.utils
+ (:import (processing.core PApplet))
+ (:use [rosado.processing]))
 
+;; converts a list of RGB values 
+;; to a processing.org color value 
+(def color-helper 
+  (let [temp-app (PApplet.)]
+    (fn [rgb-list]
+      (binding [*applet* temp-app]
+        (apply color rgb-list)))))
+
+(defn partition-with-leftovers [chunk-size a-seq]
+  "Splits a-seq into a sequence of lists, where each list
+  is chunk-size long. In case there are not enough
+  elements, returns a partition with less than n items."
+  (partition chunk-size chunk-size () a-seq))
 
 (defn map-to-range [t [r1 r2]]
   {:pre [(and (>= t 0) (<= t 1))]
